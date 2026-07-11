@@ -51,3 +51,20 @@ portfólio.
 ---
 
 *(suas entradas reais começam abaixo)*
+
+---
+
+## [2026-07-10] Bloco 2 - Movimentação (correção de método)
+
+**O que aconteceu:**
+Recebi um `PlayerController.cs` pronto pra baixar e colar no projeto. Parei e
+percebi que isso quebrava a regra de "aprender fazendo" que definimos lá no
+início — ia virar só copiar/colar sem entender.
+
+**Decisão:**
+Adicionei a "REGRA DE OURO" no topo do GDD.md: nenhum código deve ser copiado
+pronto. Toda implementação daqui pra frente é explicada pedaço por pedaço, eu
+digito, e só depois escrevo o `.md` de explicação com minhas próprias palavras.
+
+**Próximo passo:**
+Recomeçar o `PlayerController.cs` do zero, parte por parte, digitando eu mesmo.

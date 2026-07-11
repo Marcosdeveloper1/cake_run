@@ -10,7 +10,11 @@ registrar para não esquecer e não travar o foco agora.
 ## Mecânicas
 - [ ] Bicicleta/skate como meio de transporte alternativo
 - [ ] Clima dinâmico (chuva atrapalha a qualidade do bolo)
-- [ ] Modo multiplayer local (corrida de entregas)
+- [ ] Modo multiplayer co-op (local primeiro, depois online) — dois jogadores
+      carregando o mesmo bolo juntos, física sincronizada, inspirado em
+      "Carry the Glass". Ordem sugerida: 1) co-op local (mesmo PC/2 controles,
+      sem rede) → 2) multiplayer online (Netcode for GameObjects, Photon
+      Fusion ou Mirror). Só começar depois do MVP solo estar jogável.
 
 ## Conteúdo
 - [ ] Vários tipos de bolo, cada um com regras de transporte diferentes

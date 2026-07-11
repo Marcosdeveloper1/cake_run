@@ -17,11 +17,24 @@ Formato de trabalho:
 3. Ao terminar, responder mentalmente (ou por escrito no DevLog.md) o checkpoint.
 4. Só então seguir para o próximo bloco.
 
+> ⚠️ **REGRA DE OURO — NUNCA COPIAR E COLAR CÓDIGO PRONTO**
+> O objetivo aqui é aprender fazendo, não só ter o jogo funcionando. Sempre que
+> for escrever um script:
+> - Peça pra explicar o código **pedaço por pedaço** (uma variável, um método
+>   por vez), nunca o arquivo inteiro de uma vez.
+> - **Digite você mesmo** cada linha — não copie de um bloco de código pronto.
+> - Antes de aceitar uma explicação como certa, tente responder "o que essa
+>   linha faz?" com suas próprias palavras primeiro.
+> - O `.md` de explicação de cada bloco (o "porquê" da solução) deve ser
+>   escrito com as suas palavras, não copiado da explicação recebida.
+> Se em algum momento a conversa cair direto pra "aqui está o arquivo pronto
+> pra baixar", pare e peça pra recomeçar no formato de explicação por partes.
+
 ---
 
 # STATUS DO PROJETO
 
-- [ ] Bloco 0 - Planejamento
+- [x] Bloco 0 - Planejamento
 - [ ] Bloco 1 - Configuração do Projeto
 - [ ] Bloco 2 - Movimentação
 - [ ] Bloco 3 - Câmera
@@ -454,11 +467,41 @@ Build funcionando em uma máquina limpa, com página de loja pronta.
 # DECISÕES DO BLOCO 0
 *(preencher aqui conforme for definindo o jogo)*
 
-- Nome provisório:
-- Objetivo do jogo:
-- Gameplay (loop principal):
-- Público-alvo:
-- Plataforma:
+- Nome provisório: Cake Run
+- Objetivo do jogo: O jogador tem a finalidade de conseguir fazer a entrega do bolo
+  porque ele é um chefe que recebe pedidos constantemente por ser um bom chefe
+  culinário. (o que o jogador faz e por quê)
+- Gameplay (loop principal): O jogador corre e pula pela cidade equilibrando um
+  bolo cada vez mais instável, enquanto tropeça em obstáculos, escorrega em
+  rampas e evita colisões que fariam o bolo desabar de forma cômica. Cada
+  entrega é uma pequena aventura física imprevisível: o desafio não é só chegar
+  no destino, mas chegar com o bolo (quase) inteiro, arrancando risada tanto de
+  sucessos quanto de falhas espetaculares.
+  **Vibe escolhida: Caótico/cômico — física exagerada, tombos engraçados.**
+- Público-alvo: livre
+- Plataforma: Inicialmente PC (futuramente há uma expectativa caso dê um bom
+  retorno de mudar para o mobile porque tenho licença da play store)
 - Mecânicas principais:
+  - Carregar o bolo sozinho (solo, MVP) equilibrando com física exagerada
+  - Correr e pular pela cidade
+  - Colisões cômicas que desestabilizam o bolo (tombos, escorregões)
+  - Sistema de pedidos/entregas com prazo e recompensa
+  - **Futuro (pós-MVP): co-op local — dois jogadores carregando o mesmo bolo
+    juntos, inspirado em "Carry the Glass". Ver `Ideias.md` para o roadmap
+    dessa fase.**
 - Obstáculos:
+  - Pisos escorregadios / rampas
+  - Pedestres e objetos no caminho da cidade
+  - Colisões que fazem o bolo perder qualidade ou cair
 - Fluxo do jogo:
+  - **Menu principal:** Iniciar Partida / Opções / Sair
+  - **Iniciar Partida:** jogo estruturado em **fases**. Cada fase introduz
+    obstáculos e dificuldades novas. Só desbloqueia a fase seguinte depois de
+    completar a anterior (progressão linear).
+  - **Opções:** tela com abas/switch — Controles, Áudio (Música on/off +
+    volume, SFX on/off + volume), Resolução/Gráficos.
+  - **Sair:** encerra o jogo e fecha a aplicação.
+
+  > ⚠️ Nota de coerência: isso muda o Bloco 10 (Cidade) de "uma cidade aberta
+  > única" para "várias fases/níveis menores", cada uma com seu próprio
+  > layout de obstáculos. Ajustar esse bloco quando chegar nele.
