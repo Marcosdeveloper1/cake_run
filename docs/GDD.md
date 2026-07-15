@@ -186,60 +186,96 @@ atraso perceptível incômodo.
 
 # BLOCO 4 — Interação
 
+> ⚠️ Nota de coerência (2026-07-15): o jogador **já começa com o bolo** (ver
+> decisão em `Ideias.md`/DevLog), então "pegar objeto" não se aplica mais.
+> O bloco foi redirecionado para **detecção de zona de entrega**: o Trigger
+> Collider passa a ficar no ponto de entrega/NPC, não mais ao redor do
+> Player. Os conceitos (`OnTriggerEnter`, `IInteragivel`) continuam os
+> mesmos, só a aplicação muda.
+
 ### Objetivo
-Permitir que o jogador detecte e interaja com objetos do cenário.
+Permitir que o jogo detecte quando o jogador chega a um ponto de entrega
+(carregando o bolo) e dispare a lógica de interação correspondente.
 
 ### Checklist
-- [ ] Detectar objetos próximos (Raycast ou Trigger Collider)
-- [ ] Botão de interação (tecla E / botão do gamepad)
-- [ ] Pegar objeto (anexar ao jogador)
-- [ ] Soltar objeto
+- [ ] Trigger Collider no ponto de entrega (não mais no Player)
+- [ ] Detectar chegada do jogador (`OnTriggerEnter`)
+- [ ] Interface `IInteragivel` (ou `IPontoDeEntrega`) para padronizar pontos de entrega
+- [ ] Feedback básico ao chegar (placeholder: Debug.Log ou cor mudando)
 
 ### O que vou aprender
-- `Physics.Raycast` (detecção de objetos por raio invisível)
 - `OnTriggerEnter` / `OnTriggerExit` (colisores como "sensores")
 - Interfaces em C# (ex: `IInteragivel`) para padronizar objetos interagíveis
-- Parenting dinâmico de objetos (`transform.SetParent`)
+- Tags/comparação de objetos (`CompareTag`) para identificar o Player que
+  entrou no trigger
 
 ### Critério de conclusão
-O jogador consegue se aproximar de um objeto, pressionar o botão de
-interação, pegar o objeto e soltá-lo em outro lugar.
+O jogador, carregando o bolo, entra na zona de entrega e o jogo detecta
+essa chegada corretamente.
 
 ### ✅ O que eu devo saber agora?
-- Diferença entre `Raycast` e `Trigger Collider` para detectar objetos?
+- Por que um Trigger Collider serve como "sensor" sem bloquear o movimento?
 - Para que serve uma interface como `IInteragivel` no lugar de checar tags?
-- O que acontece com a física de um objeto quando ele vira filho do jogador?
+- Por que usar `CompareTag` em vez de comparar strings diretamente?
 
 ---
 
 # BLOCO 5 — Bolo
 
+> ⚠️ Nota de coerência (2026-07-15): já que o bolo **nasce com o jogador**
+> (ver nota do Bloco 4), o objetivo muda de "objeto solto no cenário à
+> espera de ser pego" para "objeto já anexado (parented) ao Player desde
+> o início da fase". O sistema de interação do Bloco 4 passa a cuidar só
+> da **entrega**, não da coleta.
+
 ### Objetivo
-Criar o objeto central do jogo: o bolo que o jogador carrega e entrega.
+Criar o objeto central do jogo: o bolo que o jogador carrega desde o
+início e entrega no ponto de destino.
 
 ### Checklist
 - [ ] Modelo 3D (placeholder ou asset simples)
 - [ ] Material (aparência visual)
 - [ ] Collider
 - [ ] Rigidbody
+- [ ] Bolo posicionado como filho do Player (parenting) ao iniciar a fase
+- [ ] Prefab do bolo (pra reaproveitar entre fases)
 
 ### O que vou aprender
 - Diferença entre `Mesh`, `Material` e `Shader`
 - Colliders convexos vs não-convexos (limitações de física)
 - Prefabs (por que o bolo deve virar um Prefab reutilizável)
+- Parenting no Editor vs via código (`transform.SetParent`) e como isso
+  afeta Rigidbody/física de um objeto filho
 
 ### Critério de conclusão
-O bolo existe como Prefab, pode ser pego pelo sistema de interação do
-Bloco 4 e reage à física.
+O bolo existe como Prefab, aparece anexado ao Player desde o início da
+fase, e reage à física (mesmo que ainda de forma simples — o balanço
+"de verdade" fica pro Bloco 6).
 
 ### ✅ O que eu devo saber agora?
 - O que é um Prefab e por que ele evita duplicar trabalho?
 - Qual a diferença entre Material e Shader?
 - Por que um Rigidbody sem massa ajustada pode se comportar de forma estranha?
+- O que muda na física de um objeto quando ele é filho (child) de outro
+  objeto com Rigidbody?
 
 ---
 
 # BLOCO 6 — Física
+
+> 💡 Nota de design (2026-07-15, atualizada): testamos `SpringJoint` primeiro,
+> mas a calibração (Spring/Damper/Mass/Sleep Threshold) se mostrou instável
+> e imprevisível — o bolo ficava "pesado" em velocidades baixas. Decisão:
+> o bolo segue o Player via **script** (`Vector3.Lerp` + Rigidbody
+> `Kinematic`, mesmo padrão do `CameraFollow` do Bloco 3), o que dá controle
+> direto e previsível sobre o "atraso" de movimento. O Rigidbody/Collider do
+> bolo continuam existindo para detecção de colisão com obstáculos, mas a
+> posição é controlada por código, não por física bruta.
+> Obstáculos cômicos que desestabilizam o bolo (brainstorm inicial, mover
+> pra `Ideias.md`/Bloco 10 quando for desenhar fases): pombo sobrevoando e
+> "sujando" o caminho, pessoa regando plantas na calçada, etc. — cada um
+> aplicando um pequeno impulso/força ao bolo ou ao Player no momento da
+> colisão/trigger.
 
 ### Objetivo
 Sistema de física que dá "vida" ao bolo: ele balança, pode cair e quebrar
@@ -467,41 +503,56 @@ Build funcionando em uma máquina limpa, com página de loja pronta.
 # DECISÕES DO BLOCO 0
 *(preencher aqui conforme for definindo o jogo)*
 
+> ⚠️ PIVOT DE DESIGN (2026-07-15): o game loop mudou de "cidade aberta +
+> pedidos/entregas" para **progressão vertical com checkpoints**, inspirado
+> diretamente em Carry The Glass. Ver detalhes logo abaixo. Isso reduz o
+> escopo (não precisa de cidade aberta, sistema de pedidos com prazo, nem
+> vários NPCs de rota) e foca o jogo no que já está funcionando: o bolo
+> instável seguindo o Player e reagindo a obstáculos.
+
 - Nome provisório: Cake Run
 - Objetivo do jogo: O jogador tem a finalidade de conseguir fazer a entrega do bolo
   porque ele é um chefe que recebe pedidos constantemente por ser um bom chefe
   culinário. (o que o jogador faz e por quê)
-- Gameplay (loop principal): O jogador corre e pula pela cidade equilibrando um
-  bolo cada vez mais instável, enquanto tropeça em obstáculos, escorrega em
-  rampas e evita colisões que fariam o bolo desabar de forma cômica. Cada
-  entrega é uma pequena aventura física imprevisível: o desafio não é só chegar
-  no destino, mas chegar com o bolo (quase) inteiro, arrancando risada tanto de
-  sucessos quanto de falhas espetaculares.
+- Gameplay (loop principal, ATUALIZADO): O jogador (chefe) sobe verticalmente
+  por uma estrutura/prédio carregando um bolo instável, desviando de
+  obstáculos cômicos no caminho (pombo sujando o caminho, pessoa regando
+  plantas, etc.) que desequilibram o bolo. Existem **checkpoints** em pontos
+  específicos da subida. Duas condições de "reset":
+  - **Bolo caiu** (qualidade chegou a 0 / estado `Caido`): volta pro último checkpoint.
+  - **Personagem caiu de uma altura** (saiu da estrutura, caiu lá embaixo):
+    volta pro último checkpoint (ou pro início, se ainda não passou de nenhum) —
+    **não é uma morte**, é só um "ops, começa dali de novo", mantendo o tom
+    cômico/leve do jogo.
   **Vibe escolhida: Caótico/cômico — física exagerada, tombos engraçados.**
 - Público-alvo: livre
 - Plataforma: Inicialmente PC (futuramente há uma expectativa caso dê um bom
   retorno de mudar para o mobile porque tenho licença da play store)
-- Mecânicas principais:
+- Mecânicas principais (ATUALIZADO):
   - Carregar o bolo sozinho (solo, MVP) equilibrando com física exagerada
-  - Correr e pular pela cidade
+  - Correr, pular e **subir** por uma estrutura vertical
   - Colisões cômicas que desestabilizam o bolo (tombos, escorregões)
-  - Sistema de pedidos/entregas com prazo e recompensa
+  - Sistema de **checkpoints**: bolo caiu ou personagem caiu → volta pro
+    último checkpoint (substitui o antigo sistema de pedidos/prazo)
   - **Futuro (pós-MVP): co-op local — dois jogadores carregando o mesmo bolo
     juntos, inspirado em "Carry the Glass". Ver `Ideias.md` para o roadmap
     dessa fase.**
 - Obstáculos:
   - Pisos escorregadios / rampas
-  - Pedestres e objetos no caminho da cidade
-  - Colisões que fazem o bolo perder qualidade ou cair
+  - Obstáculos cômicos ao longo da subida (pombo, regador, etc.) que
+    desestabilizam o bolo
+  - Quedas (do personagem, ou do bolo perdendo qualidade)
 - Fluxo do jogo:
   - **Menu principal:** Iniciar Partida / Opções / Sair
-  - **Iniciar Partida:** jogo estruturado em **fases**. Cada fase introduz
-    obstáculos e dificuldades novas. Só desbloqueia a fase seguinte depois de
-    completar a anterior (progressão linear).
+  - **Iniciar Partida:** jogo estruturado em **fases verticais**. Cada fase
+    é uma subida com checkpoints e obstáculos crescentes em dificuldade.
   - **Opções:** tela com abas/switch — Controles, Áudio (Música on/off +
     volume, SFX on/off + volume), Resolução/Gráficos.
   - **Sair:** encerra o jogo e fecha a aplicação.
 
-  > ⚠️ Nota de coerência: isso muda o Bloco 10 (Cidade) de "uma cidade aberta
-  > única" para "várias fases/níveis menores", cada uma com seu próprio
-  > layout de obstáculos. Ajustar esse bloco quando chegar nele.
+  > ⚠️ Nota de coerência: isso muda o Bloco 8 (Pedidos) de "sistema de
+  > pedido/cliente/prazo" para "sistema de checkpoints" e o Bloco 9 (NPCs)
+  > deixa de ser central para o MVP (pode virar decoração/pós-MVP). O
+  > Bloco 10 (Cidade) já tinha sido ajustado antes para "fases menores" em
+  > vez de cidade aberta — agora fica ainda mais específico: fases
+  > **verticais**, não horizontais.
